@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vouch.gg — Your identity, fully vouched.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #000000;
+  --bg2: #16181C;
+  --bg3: #202327;
+  --border: #2F3336;
+  --text: #E7E9EA;
+  --text2: #71767B;
+  --accent: #1D9BF0;
+  --accent-hover: #1A8CD8;
+  --green: #00BA7C;
+  --red: #F4212E;
+  --r: 16px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+
+/* ===== AUTH SCREEN ===== */
+#auth-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#auth-screen.hidden { display: none; }
+.auth-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 48px 40px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+.auth-logo {
+  width: 64px;
+  height: 64px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 auto 24px;
+}
+.auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.auth-sub {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 32px;
+}
+.btn-google {
+  width: 100%;
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-google:hover {
+  background: #f0f0f0;
+}
+.btn-google img {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== LOADING ===== */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  transition: opacity 0.3s;
+}
+#loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== LAYOUT ===== */
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 275px 1fr 350px;
+  gap: 0;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 12px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.logo {
+  width: 50px;
+  height: 50px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  margin: 4px 12px 12px;
+  cursor: pointer;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: var(--text);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.nav-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+.nav-item.active {
+  font-weight: 700;
+}
+.nav-item .icon {
+  font-size: 26px;
+  width: 26px;
+  text-align: center;
+}
+.btn-compose {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 16px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 16px;
+  transition: background 0.2s;
+}
+.btn-compose:hover {
+  background: var(--accent-hover);
+}
+.user-menu {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.user-menu:hover {
+  background: rgba(255,255,255,0.1);
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  font-size: 16px;
+}
+.user-info {
+  flex: 1;
+}
+.user-name {
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.user-handle {
+  font-size: 14px;
+  color: var(--text2);
+}
+.verified {
+  display: inline-flex;
+  color: var(--accent);
+  font-size: 18px;
+}
+
+/* ===== MAIN FEED ===== */
+.main {
+  border-right: 1px solid var(--border);
+  min-height: 100vh;
+}
+.page {
+  display: none;
+}
+.page.active {
+  display: block;
+}
+.header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  position: sticky;
+  top: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.header-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+}
+.tab:hover {
+  background: rgba(255,255,255,0.05);
+}
+.tab.active {
+  font-weight: 700;
+  color: var(--text);
+}
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+}
+
+/* ===== COMPOSE ===== */
+.compose-box {
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+}
+.compose-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.compose-input {
+  flex: 1;
+}
+.compose-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 20px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  min-height: 80px;
+}
+.compose-textarea::placeholder {
+  color: var(--text2);
+}
+.compose-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.compose-icons {
+  display: flex;
+  gap: 4px;
+}
+.compose-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 20px;
+  background: transparent;
+  border: none;
+}
+.compose-icon:hover {
+  background: rgba(29,155,240,0.1);
+}
+.btn-post {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-post:hover {
+  background: var(--accent-hover);
+}
+.btn-post:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== POST CARD ===== */
+.post {
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.post:hover {
+  background: rgba(255,255,255,0.03);
+}
+.post-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.post-content {
+  flex: 1;
+}
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.post-author {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 15px;
+}
+.post-handle {
+  color: var(--text2);
+  font-size: 15px;
+}
+.post-time {
+  color: var(--text2);
+  font-size: 15px;
+}
+.post-body {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  max-width: 425px;
+  margin-top: 12px;
+}
+.post-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 8px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+}
+.post-action:hover {
+  color: var(--accent);
+  background: rgba(29,155,240,0.1);
+}
+.post-action.liked {
+  color: #F91880;
+}
+.post-action.liked:hover {
+  color: #F91880;
+  background: rgba(249,24,128,0.1);
+}
+
+/* ===== RIGHT SIDEBAR ===== */
+.right-sidebar {
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.search-box {
+  background: var(--bg3);
+  border-radius: 999px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.search-box:focus-within {
+  background: var(--bg);
+  border-color: var(--accent);
+}
+.search-icon {
+  color: var(--text2);
+  font-size: 20px;
+}
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+}
+.search-input::placeholder {
+  color: var(--text2);
+}
+.widget {
+  background: var(--bg2);
+  border-radius: var(--r);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.widget-header {
+  padding: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+}
+.widget-item {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.widget-item:last-child {
+  border-bottom: none;
+}
+.widget-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+.widget-item-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.widget-item-sub {
+  color: var(--text2);
+  font-size: 13px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+.stat-card {
+  background: var(--bg3);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+
+/* ===== PROFILE ===== */
+.profile-banner {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+}
+.profile-info {
+  padding: 16px;
+  position: relative;
+}
+.profile-avatar-wrap {
+  position: relative;
+  margin-top: -80px;
+  margin-bottom: 12px;
+}
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 4px solid var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+}
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.1);
+}
+.profile-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.profile-handle {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+.profile-bio {
+  font-size: 15px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.profile-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  color: var(--text2);
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+.profile-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.profile-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+.profile-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.profile-stat:hover .profile-stat-number {
+  text-decoration: underline;
+}
+.profile-stat-number {
+  font-weight: 700;
+  color: var(--text);
+}
+.profile-stat-label {
+  color: var(--text2);
+}
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-verified {
+  background: rgba(29,155,240,0.1);
+  color: var(--accent);
+}
+.badge-admin {
+  background: rgba(255,215,0,0.1);
+  color: #FFD700;
+}
+.badge-nitro {
+  background: rgba(255,115,250,0.1);
+  color: #FF73FA;
+}
+.discord-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== ADMIN PANEL ===== */
+.admin-panel {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  margin: 16px;
+}
+.admin-header {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #FFD700;
+}
+.admin-section {
+  margin-bottom: 24px;
+}
+.admin-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text2);
+}
+.form-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--accent);
+}
+textarea.form-input {
+  resize: vertical;
+  min-height: 100px;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text2);
+}
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.empty-text {
+  font-size: 15px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1280px) {
+  #app {
+    grid-template-columns: 88px 1fr 350px;
+  }
+  .sidebar {
+    padding: 12px 4px;
+  }
+  .nav-item span {
+    display: none;
+  }
+  .btn-compose {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    padding: 0;
+  }
+  .btn-compose span {
+    display: none;
+  }
+  .user-info {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  #app {
+    grid-template-columns: 88px 1fr;
+  }
+  .right-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 688px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px;
+  }
+  .logo, .btn-compose, .user-menu {
+    display: none;
+  }
+  .nav-item {
+    padding: 12px;
+    margin: 0;
+  }
+  .main {
+    border-right: none;
+    margin-bottom: 60px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">V</div>
+    <h1 class="auth-title">Welcome to vouch.gg</h1>
+    <p class="auth-sub">Sign in to create your profile, connect Discord, and join the community.</p>
+    <button class="btn-google" id="btn-signin">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <span>Sign in with Google</span>
+    </button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading" class="hidden">
+  <div class="spinner"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo" onclick="showPage('home')">V</div>
+    <nav>
+      <a class="nav-item active" data-page="home" onclick="showPage('home',this)">
+        <span class="icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <a class="nav-item" data-page="market" onclick="showPage('market',this)">
+        <span class="icon">🛒</span>
+        <span>Market</span>
+      </a>
+      <a class="nav-item" data-page="news" onclick="showPage('news',this)">
+        <span class="icon">📰</span>
+        <span>News</span>
+      </a>
+      <a class="nav-item" data-page="profile" onclick="showPage('profile',this)">
+        <span class="icon">👤</span>
+        <span>Profile</span>
+      </a>
+      <a class="nav-item" data-page="settings" onclick="showPage('settings',this)">
+        <span class="icon">⚙️</span>
+        <span>Settings</span>
+      </a>
+      <a class="nav-item" id="admin-nav-item" style="display:none" data-page="admin" onclick="showPage('admin',this)">
+        <span class="icon">👑</span>
+        <span>Admin</span>
+      </a>
+    </nav>
+    <button class="btn-compose" onclick="focusCompose()">
+      <span>Post</span>
+      <span style="display:none">+</span>
+    </button>
+    <div class="user-menu" onclick="showPage('profile',null)">
+      <div class="user-avatar" id="sidebar-avatar"></div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-name"></div>
+        <div class="user-handle" id="sidebar-handle"></div>
+      </div>
+      <span>⋯</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="header">
+        <div class="header-title">Home</div>
+      </div>
+
+      <!-- Compose Box -->
+      <div class="compose-box">
+        <div class="compose-avatar" id="compose-avatar"></div>
+        <div class="compose-input">
+          <textarea class="compose-textarea" id="compose-text" placeholder="What's happening?"></textarea>
+          <div class="compose-actions">
+            <div class="compose-icons">
+              <button class="compose-icon" title="Add emoji" onclick="addEmoji()">😊</button>
+            </div>
+            <button class="btn-post" id="btn-post" onclick="publishPost()">Post</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts Feed -->
+      <div id="posts-feed"></div>
+    </div>
+
+    <!-- MARKET PAGE -->
+    <div class="page" id="page-market">
+      <div class="header">
+        <div class="header-title">Market</div>
+      </div>
+      <div id="market-content"></div>
+    </div>
+
+    <!-- NEWS PAGE -->
+    <div class="page" id="page-news">
+      <div class="header">
+        <div class="header-title">News</div>
+      </div>
+      <div id="news-content"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="profile-banner"></div>
+      <div class="profile-info">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar"></div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-outline" onclick="showPage('settings',null)">Edit Profile</button>
+        </div>
+        <div class="profile-name" id="profile-name"></div>
+        <div class="profile-handle" id="profile-username"></div>
+        <div class="profile-bio" id="profile-bio"></div>
+        <div class="profile-meta" id="profile-meta"></div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span class="profile-stat-number" id="profile-following">0</span>
+            <span class="profile-stat-label">Following</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-number" id="profile-followers">0</span>
+            <span class="profile-stat-label">Followers</span>
+          </div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active">Posts</button>
+        <button class="tab">Portfolio</button>
+        <button class="tab">Servers</button>
+      </div>
+      <div id="profile-posts"></div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="page" id="page-settings">
+      <div class="header">
+        <div class="header-title">Settings</div>
+      </div>
+      <div style="padding: 20px">
+        <div class="admin-panel">
+          <h2 style="margin-bottom:20px">Profile Settings</h2>
+          <div class="form-group">
+            <label class="form-label">Display Name</label>
+            <input type="text" class="form-input" id="settings-displayname" placeholder="Your display name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bio</label>
+            <textarea class="form-input" id="settings-bio" placeholder="Tell us about yourself..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discord Connection</label>
+            <div id="discord-status" style="padding:12px;background:var(--bg3);border-radius:8px;margin-bottom:12px">
+              Not connected
+            </div>
+            <button class="btn-primary" id="btn-connect-discord" onclick="connectDiscord()">Connect Discord</button>
+          </div>
+          <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div class="page" id="page-admin" style="display:none">
+      <div class="header">
+        <div class="header-title">Admin Panel</div>
+      </div>
+      <div class="admin-panel">
+        <div class="admin-header">👑 Admin Controls</div>
+        
+        <div class="admin-section">
+          <div class="admin-section-title">Create News Post</div>
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-input" id="admin-news-title">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Content</label>
+            <textarea class="form-input" id="admin-news-content"></textarea>
+          </div>
+          <button class="btn-primary" onclick="createNews()">Publish News</button>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Site Statistics</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number" id="admin-total-users">0</div>
+              <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="admin-total-posts">0</div>
+              <div class="stat-label">Total Posts</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="admin-verified-users">0</div>
+              <div class="stat-label">Verified Users</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="admin-discord-linked">0</div>
+              <div class="stat-label">Discord Linked</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="right-sidebar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Search vouch.gg">
+    </div>
+
+    <div class="widget">
+      <div class="widget-header">Platform Stats</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="stat-users">0</div>
+          <div class="stat-label">Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-posts">0</div>
+          <div class="stat-label">Posts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-discord">0</div>
+          <div class="stat-label">Discord Linked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-verified">0</div>
+          <div class="stat-label">Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-header">Featured Profiles</div>
+      <div id="featured-users"></div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-header">Latest News</div>
+      <div id="latest-news"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+// ============================================
+// FIREBASE CONFIG - REPLACE WITH YOUR VALUES
+// ============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyA-FFDnHMuI2LkIm9w_SVD8SqjPul-mLzk",
+  authDomain: "vouch-gg.firebaseapp.com",
+  projectId: "vouch-gg",
+  storageBucket: "vouch-gg.firebasestorage.app",
+  messagingSenderId: "61282126994",
+  appId: "1:61282126994:web:fbbb246bb13392f6b0ea4b"
+};
+
+// ============================================
+// DISCORD CONFIG - REPLACE WITH YOUR VALUES
+// ============================================
+const DISCORD_CLIENT_ID = "1496158778633224463";
+const DISCORD_REDIRECT_URI = window.location.origin + "/discord-callback.html";
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Global state
+let currentUser = null;
+let isAdmin = false;
+
+// Auth state listener
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    console.log('Logged in as:', user.email);
+    console.log('Your Firebase UID:', user.uid);
+    
+    // Check admin status
+    try {
+      const adminDoc = await db.collection('admins').doc(user.uid).get();
+      isAdmin = adminDoc.exists && adminDoc.data().isAdmin === true;
+      if (isAdmin) {
+        document.getElementById('admin-nav-item').style.display = 'flex';
+        console.log('✅ Admin access granted');
+      }
+    } catch (e) {
+      console.log('Not an admin');
+    }
+    
+    // Initialize or update user profile
+    await initUserProfile(user);
+    
+    // Load data
+    await loadData();
+    
+    // Show app
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('app').style.display = 'grid';
+  } else {
+    // Show auth screen
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('auth-screen').classList.remove('hidden');
+  }
+});
+
+// Sign in with Google
+document.getElementById('btn-signin').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    document.getElementById('loading').classList.remove('hidden');
+    await auth.signInWithPopup(provider);
+  } catch (error) {
+    console.error('Sign in error:', error);
+    alert('Sign in failed: ' + error.message);
+    document.getElementById('loading').classList.add('hidden');
+  }
+});
+
+// Initialize user profile
+async function initUserProfile(user) {
+  const userRef = db.collection('users').doc(user.uid);
+  const doc = await userRef.get();
+  
+  if (!doc.exists) {
+    // Create new user
+    await userRef.set({
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || user.email.split('@')[0],
+      photoURL: user.photoURL || '',
+      bio: '',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      followers: 0,
+      following: 0,
+      verified: false,
+      discord: null
+    });
+  }
+  
+  // Update UI
+  const userData = (await userRef.get()).data();
+  updateUserUI(userData);
+}
+
+// Update user UI
+function updateUserUI(userData) {
+  const initial = userData.displayName ? userData.displayName[0].toUpperCase() : '?';
+  document.getElementById('sidebar-avatar').textContent = initial;
+  document.getElementById('sidebar-name').innerHTML = userData.displayName + (userData.verified ? ' <span class="verified">✓</span>' : '');
+  document.getElementById('sidebar-handle').textContent = '@' + userData.displayName.toLowerCase().replace(/\s/g, '');
+  
+  document.getElementById('compose-avatar').textContent = initial;
+  document.getElementById('profile-avatar').textContent = initial;
+  document.getElementById('profile-name').innerHTML = userData.displayName + (userData.verified ? ' <span class="verified">✓</span>' : '');
+  document.getElementById('profile-username').textContent = '@' + userData.displayName.toLowerCase().replace(/\s/g, '');
+  document.getElementById('profile-bio').textContent = userData.bio || 'No bio yet.';
+  document.getElementById('profile-followers').textContent = userData.followers || 0;
+  document.getElementById('profile-following').textContent = userData.following || 0;
+  
+  // Settings
+  document.getElementById('settings-displayname').value = userData.displayName || '';
+  document.getElementById('settings-bio').value = userData.bio || '';
+  
+  // Discord status
+  if (userData.discord) {
+    document.getElementById('discord-status').innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="https://cdn.discordapp.com/embed/avatars/${userData.discord.discriminator % 5}.png" 
+             style="width:40px;height:40px;border-radius:50%">
+        <div>
+          <div style="font-weight:600">${userData.discord.username}#${userData.discord.discriminator}</div>
+          <div style="font-size:13px;color:var(--text2)">Connected</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('btn-connect-discord').textContent = 'Reconnect Discord';
+    
+    // Show Discord meta
+    const metaHTML = [];
+    if (userData.discord.nitro) {
+      metaHTML.push(`<div class="profile-meta-item"><span class="badge badge-nitro">💎 Nitro</span></div>`);
+    }
+    if (userData.discord.joined) {
+      const joinDate = new Date(userData.discord.joined);
+      metaHTML.push(`<div class="profile-meta-item">📅 Joined Discord ${joinDate.toLocaleDateString('en-US', {month: 'short', year: 'numeric'})}</div>`);
+    }
+    document.getElementById('profile-meta').innerHTML = metaHTML.join('');
+  }
+}
+
+// Load all data
+async function loadData() {
+  await Promise.all([
+    loadPosts(),
+    loadStats(),
+    loadFeaturedUsers(),
+    loadNews(),
+    loadMarket()
+  ]);
+  
+  if (isAdmin) {
+    await loadAdminStats();
+  }
+}
+
+// Load posts
+async function loadPosts() {
+  const postsSnapshot = await db.collection('posts')
+    .orderBy('timestamp', 'desc')
+    .limit(50)
+    .get();
+  
+  const feed = document.getElementById('posts-feed');
+  const profilePosts = document.getElementById('profile-posts');
+  
+  if (postsSnapshot.empty) {
+    feed.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <div class="empty-title">No posts yet</div>
+        <div class="empty-text">Be the first to post something!</div>
+      </div>
+    `;
+    profilePosts.innerHTML = feed.innerHTML;
+    return;
+  }
+  
+  const allPostsHTML = [];
+  const userPostsHTML = [];
+  
+  for (const doc of postsSnapshot.docs) {
+    const post = doc.data();
+    const postHTML = renderPost(doc.id, post);
+    allPostsHTML.push(postHTML);
+    if (post.userId === currentUser.uid) {
+      userPostsHTML.push(postHTML);
+    }
+  }
+  
+  feed.innerHTML = allPostsHTML.join('');
+  profilePosts.innerHTML = userPostsHTML.length > 0 ? userPostsHTML.join('') : `
+    <div class="empty-state">
+      <div class="empty-icon">📝</div>
+      <div class="empty-title">No posts yet</div>
+      <div class="empty-text">Share your first thought with the community!</div>
+    </div>
+  `;
+}
+
+// Render post
+function renderPost(id, post) {
+  const timestamp = post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  }) : 'Just now';
+  
+  const initial = post.authorName ? post.authorName[0].toUpperCase() : '?';
+  const verified = post.verified ? '<span class="verified">✓</span>' : '';
+  const liked = post.likes && post.likes.includes(currentUser.uid);
+  
+  return `
+    <div class="post">
+      <div class="post-avatar">${initial}</div>
+      <div class="post-content">
+        <div class="post-header">
+          <span class="post-author">${post.authorName}</span>
+          ${verified}
+          <span class="post-handle">@${post.authorHandle}</span>
+          <span>·</span>
+          <span class="post-time">${timestamp}</span>
+        </div>
+        <div class="post-body">${escapeHtml(post.text)}</div>
+        <div class="post-actions">
+          <button class="post-action" onclick="replyPost('${id}')">
+            <span>💬</span>
+            <span>${post.replies || 0}</span>
+          </button>
+          <button class="post-action" onclick="repost('${id}')">
+            <span>🔄</span>
+            <span>${post.reposts || 0}</span>
+          </button>
+          <button class="post-action ${liked ? 'liked' : ''}" onclick="likePost('${id}')">
+            <span>${liked ? '❤️' : '🤍'}</span>
+            <span>${post.likesCount || 0}</span>
+          </button>
+          <button class="post-action" onclick="sharePost('${id}')">
+            <span>📤</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Publish post
+async function publishPost() {
+  const text = document.getElementById('compose-text').value.trim();
+  if (!text) return;
+  
+  const userDoc = await db.collection('users').doc(currentUser.uid).get();
+  const userData = userDoc.data();
+  
+  await db.collection('posts').add({
+    userId: currentUser.uid,
+    authorName: userData.displayName,
+    authorHandle: userData.displayName.toLowerCase().replace(/\s/g, ''),
+    verified: userData.verified || false,
+    text: text,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    likes: [],
+    likesCount: 0,
+    replies: 0,
+    reposts: 0
+  });
+  
+  document.getElementById('compose-text').value = '';
+  await loadPosts();
+  await loadStats();
+}
+
+// Like post
+async function likePost(postId) {
+  const postRef = db.collection('posts').doc(postId);
+  const post = await postRef.get();
+  const data = post.data();
+  const likes = data.likes || [];
+  
+  if (likes.includes(currentUser.uid)) {
+    await postRef.update({
+      likes: firebase.firestore.FieldValue.arrayRemove(currentUser.uid),
+      likesCount: firebase.firestore.FieldValue.increment(-1)
+    });
+  } else {
+    await postRef.update({
+      likes: firebase.firestore.FieldValue.arrayUnion(currentUser.uid),
+      likesCount: firebase.firestore.FieldValue.increment(1)
+    });
+  }
+  
+  await loadPosts();
+}
+
+// Load stats
+async function loadStats() {
+  const usersSnapshot = await db.collection('users').get();
+  const postsSnapshot = await db.collection('posts').get();
+  
+  let discordLinked = 0;
+  let verified = 0;
+  
+  usersSnapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.discord) discordLinked++;
+    if (data.verified) verified++;
+  });
+  
+  document.getElementById('stat-users').textContent = usersSnapshot.size;
+  document.getElementById('stat-posts').textContent = postsSnapshot.size;
+  document.getElementById('stat-discord').textContent = discordLinked;
+  document.getElementById('stat-verified').textContent = verified;
+}
+
+// Load featured users
+async function loadFeaturedUsers() {
+  const usersSnapshot = await db.collection('users')
+    .orderBy('followers', 'desc')
+    .limit(5)
+    .get();
+  
+  const html = usersSnapshot.docs.map(doc => {
+    const user = doc.data();
+    const initial = user.displayName ? user.displayName[0].toUpperCase() : '?';
+    return `
+      <div class="widget-item">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff">${initial}</div>
+          <div style="flex:1">
+            <div class="widget-item-title">${user.displayName} ${user.verified ? '<span class="verified">✓</span>' : ''}</div>
+            <div class="widget-item-sub">@${user.displayName.toLowerCase().replace(/\s/g, '')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('featured-users').innerHTML = html || '<div class="widget-item">No users yet</div>';
+}
+
+// Load news
+async function loadNews() {
+  const newsSnapshot = await db.collection('news')
+    .orderBy('timestamp', 'desc')
+    .limit(5)
+    .get();
+  
+  const newsHTML = newsSnapshot.docs.map(doc => {
+    const news = doc.data();
+    const date = news.timestamp ? new Date(news.timestamp.toDate()).toLocaleDateString() : 'Recent';
+    return `
+      <div class="widget-item">
+        <div class="widget-item-title">${news.title}</div>
+        <div class="widget-item-sub">${date}</div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('latest-news').innerHTML = newsHTML || '<div class="widget-item">No news yet</div>';
+  
+  // News page
+  const newsPageHTML = newsSnapshot.docs.map(doc => {
+    const news = doc.data();
+    const date = news.timestamp ? new Date(news.timestamp.toDate()).toLocaleDateString() : 'Recent';
+    return `
+      <div class="post">
+        <div class="post-avatar" style="background:#FFD700">V</div>
+        <div class="post-content">
+          <div class="post-header">
+            <span class="post-author">vouch.gg</span>
+            <span class="verified">✓</span>
+            <span class="badge badge-admin">Official</span>
+            <span>·</span>
+            <span class="post-time">${date}</span>
+          </div>
+          <div class="post-body"><strong>${news.title}</strong><br><br>${escapeHtml(news.content)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('news-content').innerHTML = newsPageHTML || `
+    <div class="empty-state">
+      <div class="empty-icon">📰</div>
+      <div class="empty-title">No news yet</div>
+      <div class="empty-text">Check back soon for updates!</div>
+    </div>
+  `;
+}
+
+// Load market
+async function loadMarket() {
+  const marketSnapshot = await db.collection('marketItems').get();
+  
+  const marketHTML = marketSnapshot.docs.map(doc => {
+    const item = doc.data();
+    return `
+      <div class="post">
+        <div class="post-content" style="width:100%">
+          <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
+            <div>
+              <div class="post-author">${item.name}</div>
+              <div style="color:var(--text2);margin-top:4px">${item.description}</div>
+            </div>
+            <div style="font-size:20px;font-weight:700;color:var(--accent)">${item.price} VC</div>
+          </div>
+          <button class="btn-primary" onclick="purchaseItem('${doc.id}')">Purchase</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('market-content').innerHTML = marketHTML || `
+    <div class="empty-state">
+      <div class="empty-icon">🛒</div>
+      <div class="empty-title">Market coming soon</div>
+      <div class="empty-text">Check back later for exclusive items!</div>
+    </div>
+  `;
+}
+
+// Connect Discord
+function connectDiscord() {
+  const scope = 'identify guilds guilds.members.read';
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT_URI)}&response_type=code&scope=${encodeURIComponent(scope)}&state=${currentUser.uid}`;
+  window.open(url, '_blank', 'width=500,height=700');
+}
+
+// Save profile
+async function saveProfile() {
+  const displayName = document.getElementById('settings-displayname').value.trim();
+  const bio = document.getElementById('settings-bio').value.trim();
+  
+  if (!displayName) {
+    alert('Display name is required');
+    return;
+  }
+  
+  await db.collection('users').doc(currentUser.uid).update({
+    displayName,
+    bio
+  });
+  
+  alert('Profile updated!');
+  const userData = (await db.collection('users').doc(currentUser.uid).get()).data();
+  updateUserUI(userData);
+}
+
+// Admin: Create news
+async function createNews() {
+  const title = document.getElementById('admin-news-title').value.trim();
+  const content = document.getElementById('admin-news-content').value.trim();
+  
+  if (!title || !content) {
+    alert('Title and content are required');
+    return;
+  }
+  
+  await db.collection('news').add({
+    title,
+    content,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    author: currentUser.uid
+  });
+  
+  document.getElementById('admin-news-title').value = '';
+  document.getElementById('admin-news-content').value = '';
+  alert('News published!');
+  await loadNews();
+}
+
+// Admin: Load stats
+async function loadAdminStats() {
+  const users = await db.collection('users').get();
+  const posts = await db.collection('posts').get();
+  
+  let verified = 0;
+  let discord = 0;
+  
+  users.forEach(doc => {
+    const data = doc.data();
+    if (data.verified) verified++;
+    if (data.discord) discord++;
+  });
+  
+  document.getElementById('admin-total-users').textContent = users.size;
+  document.getElementById('admin-total-posts').textContent = posts.size;
+  document.getElementById('admin-verified-users').textContent = verified;
+  document.getElementById('admin-discord-linked').textContent = discord;
+}
+
+// Navigation
+function showPage(pageId, navItem) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  
+  document.getElementById('page-' + pageId).classList.add('active');
+  if (navItem) {
+    navItem.classList.add('active');
+  } else {
+    document.querySelector(`[data-page="${pageId}"]`)?.classList.add('active');
+  }
+}
+
+// Utilities
+function escapeHtml(text) {
+  return text.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function focusCompose() {
+  document.getElementById('compose-text').focus();
+}
+
+function addEmoji() {
+  const emojis = ['😊', '😂', '❤️', '🔥', '👍', '🎉', '💯', '✨'];
+  const emoji = prompt('Pick an emoji:\n' + emojis.join(' '));
+  if (emoji) {
+    const textarea = document.getElementById('compose-text');
+    textarea.value += emoji;
+    textarea.focus();
+  }
+}
+
+// Placeholder functions
+function replyPost(id) { alert('Reply feature coming soon!'); }
+function repost(id) { alert('Repost feature coming soon!'); }
+function sharePost(id) { alert('Share feature coming soon!'); }
+function purchaseItem(id) { alert('Purchase feature coming soon!'); }
+
+</script>
+</body>
+</html>
