@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive | vouch.gg</title>
+    <style>
+        /* Sharing the same base variables as the index file */
+        :root {
+            --obsidian: #050505;
+            --obsidian-light: #111111;
+            --gold: #D4AF37;
+            --gold-hover: #F3E5AB;
+            --ivory: #FDFBF7;
+            --muted: #8A8A80;
+            --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { background-color: var(--obsidian); color: var(--ivory); line-height: 1.6; }
+        
+        /* Navigation (Identical to Dashboard) */
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5%; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .logo-container { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; text-decoration: none; color: var(--ivory); }
+        .logo-container span { color: var(--gold); }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: var(--ivory); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--gold); }
+        .btn-gold { background: var(--gold-gradient); color: var(--obsidian); padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; transition: transform 0.2s; }
+        
+        /* Header */
+        header { padding: 4rem 5%; text-align: center; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
+        .gold-text { background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Content Sections */
+        .container { max-width: 1000px; margin: 0 auto; padding: 4rem 5%; }
+        
+        .about-card { background: var(--obsidian-light); border-left: 4px solid var(--gold); padding: 3rem; border-radius: 8px; margin-bottom: 4rem; }
+        .about-card h2 { color: var(--gold); margin-bottom: 1rem; font-size: 2rem; }
+        .about-card p { color: var(--muted); font-size: 1.1rem; margin-bottom: 1rem; }
+
+        /* News Grid */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .news-item { background: var(--obsidian-light); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 12px; padding: 2rem; transition: transform 0.3s, border-color 0.3s; cursor: pointer; }
+        .news-item:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .news-date { color: var(--gold); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem; }
+        .news-item h3 { margin-bottom: 1rem; font-size: 1.3rem; }
+        .news-item p { color: var(--muted); font-size: 0.95rem; }
+        
+        footer { text-align: center; padding: 3rem; color: var(--muted); border-top: 1px solid rgba(212, 175, 55, 0.1); margin-top: 3rem; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo-container">
+            <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 5L90 20V50C90 75 50 95 50 95C50 95 10 75 10 50V20L50 5Z" fill="#111111" stroke="#D4AF37" stroke-width="6"/>
+                <path d="M50 5V95C50 95 90 75 90 50V20L50 5Z" fill="#D4AF37"/>
+                <path d="M25 35L40 65L45 55" stroke="#D4AF37" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M70 45L65 55L75 50H65L70 45Z" fill="#050505"/>
+            </svg>
+            vouch<span>.gg</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="archive.html" style="color: var(--gold);">Archive</a>
+            <a href="index.html#pricing">Pricing</a>
+        </div>
+        <a href="#" class="btn-gold">Sign In</a>
+    </nav>
+
+    <header>
+        <h1 style="font-size: 3rem; margin-bottom: 1rem;">The <span class="gold-text">Archive</span></h1>
+        <p style="color: var(--muted); font-size: 1.2rem;">Platform news, updates, and the philosophy behind the gold standard.</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="about-card">
+            <h2>The vouch.gg Principle: Trust is Gold.</h2>
+            <p>In a digital world oversaturated with inauthentic information, a trustworthy reputation is invaluable. Our goal is to create a digital ecosystem where merit is recognized, and reliability is visually rewarded.</p>
+            <p>vouch.gg isn't just a bio platform; it's a verifiable gold standard. By replacing traditional metrics with authenticated vouches, we ensure that the creators, developers, and users who deserve recognition are the ones who shine the brightest.</p>
+        </div>
+
+        <h2 style="margin-bottom: 2rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 1rem;">Latest Updates</h2>
+
+        <div class="news-grid">
+            <div class="news-item">
+                <span class="news-date">August 24, 2024</span>
+                <h3>Platform Security: The Obsidian Barrier</h3>
+                <p>We've implemented a new layer of DDoD protection and link verification to ensure your reputation is never compromised by malicious actors.</p>
+            </div>
+            
+            <div class="news-item">
+                <span class="news-date">July 15, 2024</span>
+                <h3>New Gilded Theme Packs Released</h3>
+                <p>Premium members now have access to 5 new animated background styles, including the highly requested "Liquid Gold" and "Dark Matter" themes.</p>
+            </div>
+
+            <div class="news-item">
+                <span class="news-date">June 02, 2024</span>
+                <h3>vouch.gg Developer API is Live</h3>
+                <p>Integrate your vouch count directly into your Discord bots and personal portfolios using our newly documented REST API.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 vouch.gg. The Gold Standard of Reputation.</p>
+        <p style="font-size: 0.8rem; margin-top: 10px;">
+            <a href="#" style="color: var(--muted); text-decoration: none;">Terms of Service</a> | 
+            <a href="#" style="color: var(--muted); text-decoration: none;">Privacy Policy</a>
+        </p>
+    </footer>
+
+</body>
+</html>
